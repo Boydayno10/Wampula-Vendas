@@ -23,6 +23,7 @@ import '../../utils/auth_helper.dart';
 import '../seller/seller_store_screen.dart';
 import '../../widgets/wv_primary_button.dart';
 import 'product_image_zoom_screen.dart';
+import 'product_comments_sheet.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final ProductModel product;
@@ -357,6 +358,31 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           onBuyNowOrChat: _isClientPublication ? _openChat : _buyNow,
         ),
       ),
+    );
+  }
+
+  void _openCommentsSheet() {
+    final p = widget.product;
+    // Dono do conteúdo: vendedor (produto) ou cliente (publicação)
+    final ownerId = _isClientPublication
+        ? (_clientPublication?.userId ?? '')
+        : (p.sellerId ?? '');
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) {
+        final maxHeight = MediaQuery.of(ctx).size.height * 0.75;
+        return SizedBox(
+          height: maxHeight,
+          child: ProductCommentsSheet(
+            productId: widget.product.id,
+            isClientPublication: _isClientPublication,
+            ownerId: ownerId,
+          ),
+        );
+      },
     );
   }
 
@@ -1158,6 +1184,39 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             ),
                           );
                         },
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // Comentários e avaliações
+                      InkWell(
+                        onTap: _openCommentsSheet,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey[300]!),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: const [
+                              Icon(Icons.chat_bubble_outline, size: 20),
+                              SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  'Comentários e avaliações',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              Icon(Icons.arrow_forward_ios, size: 16),
+                            ],
+                          ),
+                        ),
                       ),
                     ],
                   ),

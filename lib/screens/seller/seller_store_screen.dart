@@ -100,13 +100,38 @@ class _SellerStoreScreenState extends State<SellerStoreScreen> {
       });
     }
   }
+  
+  Future<void> _loadStoreInfo() async {
+    try {
+      // Se for a loja do usuário logado, usa o perfil já carregado em memória
+      if (widget.sellerId == AuthService.currentUser.id &&
+          AuthService.currentUser.id.isNotEmpty) {
+        setState(() {
+          _storeDescription = AuthService.currentUser.storeDescription;
+          _storeBanner = AuthService.currentUser.storeBanner;
+        });
+        return;
+      }
 
-  void _loadStoreInfo() {
-    // Se for a loja do usuário logado, pega as informações dele
-    if (widget.sellerId == AuthService.currentUser.id) {
+      // Para qualquer outro visitante, busca descrição e banner direto do Supabase
+      final profile = await Supabase.instance.client
+          .from('profiles')
+          .select('store_description, store_banner')
+          .eq('id', widget.sellerId)
+          .maybeSingle();
+
+      if (!mounted || profile == null) return;
+
       setState(() {
-        _storeDescription = AuthService.currentUser.storeDescription;
-        _storeBanner = AuthService.currentUser.storeBanner;
+        _storeDescription = (profile['store_description'] ?? '') as String;
+        _storeBanner = profile['store_banner'] as String?;
+      });
+    } catch (e) {
+      // Em caso de erro, mantém valores padrão (sem quebrar a tela)
+      if (!mounted) return;
+      setState(() {
+        _storeDescription = _storeDescription;
+        _storeBanner = _storeBanner;
       });
     }
   }

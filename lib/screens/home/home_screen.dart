@@ -388,22 +388,23 @@ class _HomeScreenState extends State<HomeScreen> {
                   AnimatedOpacity(
                     opacity: _currentIndex == 0 ? (1.0 - _titleOpacity) : 0.0,
                     duration: const Duration(milliseconds: 100),
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() => _currentIndex = 1);
-                      },
-                      child: Row(
-                        children: [
-                          const Text(
-                            'WV',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 18,
-                              color: Colors.black,
-                            ),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          height: 40,
+                          width: 80,
+                          child: Image.asset(
+                            'assets/images/wampulavendas.png',
+                            fit: BoxFit.contain,
+                            filterQuality: FilterQuality.high,
                           ),
-                          const SizedBox(width: 8),
-                          Expanded(
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() => _currentIndex = 1);
+                            },
                             child: Container(
                               height: 40,
                               decoration: BoxDecoration(
@@ -432,8 +433,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
